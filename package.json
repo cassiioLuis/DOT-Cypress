@@ -1,0 +1,22 @@
+{
+  "name": "DOT-Cypress",
+  "version": "1.0.0",
+  "description": "Projeto automação - Prova QA",
+  "main": "index.js",
+  "author": "Cassio Ramos",
+  "license": "MIT",
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run --browser chrome",
+    "lint": "yarn eslint . --fix"
+  },
+  "devDependencies": {
+    "cypress": "^14.1.0",
+    "cypress-mochawesome-reporter": "^3.8.2",
+    "eslint": "^8.0.1",
+    "eslint-config-standard": "^17.1.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0 || ^16.0.0 ",
+    "eslint-plugin-promise": "^6.0.0"
+  }
+}

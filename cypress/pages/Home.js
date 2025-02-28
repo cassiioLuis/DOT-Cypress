@@ -3,7 +3,7 @@
 class Home {
 
     go() {
-        cy.visit('/')
+        cy.exemplo('/')
         cy.url().should('eq', 'https://www.amazon.com.br/')
     }
 

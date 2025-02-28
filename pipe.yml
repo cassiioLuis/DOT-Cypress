@@ -1,0 +1,42 @@
+name: Cypress Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        parallel: [1, 2]  # Ajustar conforme o número de testes
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Install Yarn
+      run: |
+        npm install -g yarn 
+
+    - name: Install dependencies using Yarn
+      run: |
+        yarn install
+
+    - name: Install Cypress
+      run: |
+        yarn add cypress
+
+    - name: Run Cypress tests in parallel
+      run: |
+        npx cypress run --record --parallel --ci-build-id ${{ github.run_id }} --group 'group-${{ matrix.parallel }}'  # Executando testes em paralelo

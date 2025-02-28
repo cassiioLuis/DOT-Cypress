@@ -8,7 +8,7 @@ Projeto de automação e2e com Cypress <br><br>
 
 Projeto simples, com apenas um cenário e seguindo uma estrutra básica. <br>
 
-Devido a falta de complexidade, não foi necessário o uso de custom commands ou variáveis globais com Cypress.env <br>
+Devido a falta de complexidade, não foi necessário o uso de custom commands (adicionado um exemplo apenas) ou variáveis globais com Cypress.env <br>
 
 <br>
 

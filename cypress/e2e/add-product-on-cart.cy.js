@@ -15,11 +15,37 @@ describe('Adicionar produto ao carrinho', () => {
 
     context(`Adicionar o produto ${product.title} ao carrinho de compras`, () => {
 
-        before(() => {
+        beforeEach(() => {
             Home.go()
         })
 
-        it('deve exibir a mensagem de: Adicionado ao carrinho', () => {
+        it('deve localizar a edição correta do livro e author', () => {
+            //Realiza pesquisa do produto na Home
+            Home.search(product.title)
+            Home.applySearch()
+
+            //Encontra o livro correto nos resultados e abre os detalhes
+            Survey.surveyResult(product.title, product.edition, product.author)
+        })
+
+        it('deve verificar que o livro é novo', () => {
+            //Realiza pesquisa do produto na Home
+            Home.search(product.title)
+            Home.applySearch()
+
+            //Encontra o livro correto nos resultados e abre os detalhes
+            Survey.surveyResult(product.title, product.edition, product.author)
+            Survey.openDetails(product.title)
+
+            //Valida que abriu os detalhes do livro correto, que é um livro novo e adiciona ao carrinho
+            ProductDetails.titleIsVisible(product.title)
+            ProductDetails.bookEdition(product.edition)
+            ProductDetails.author(product.author)
+            ProductDetails.openMoreOptions()
+            ProductDetails.seeOptions(product.title, product.status)
+        })
+
+        it('deve adicionar o produto ao corrinho e exibir a mensagem: Adicionado ao carrinho', () => {
             //Realiza pesquisa do produto na Home
             Home.search(product.title)
             Home.applySearch()

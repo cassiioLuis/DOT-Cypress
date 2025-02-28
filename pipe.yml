@@ -4,39 +4,62 @@ on:
   push:
     branches:
       - main
+      - develop
   pull_request:
     branches:
       - main
+      - develop
 
 jobs:
-  cypress:
+  # Job para rodar os testes em paralelo
+  cypress-run:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        parallel: [1, 2]  # Ajustar conforme o número de testes
-
+        # Divisão em 3 partes para execução paralela de testes
+        cypress_version: [latest]  # Cypress sempre será instalado na versão mais recente
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      # Passo 1: Check-out do código
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
+      # Passo 2: Configuração do Node.js (versão 22.14)
+      - name: Set up Node.js 22.14
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22.14'  # Versão do Node.js 22.14
 
-    - name: Install Yarn
-      run: |
-        npm install -g yarn 
+      # Passo 3: Instalação das dependências com Yarn
+      - name: Install dependencies with Yarn
+        run: yarn install  # Usando Yarn para instalar as dependências
 
-    - name: Install dependencies using Yarn
-      run: |
-        yarn install
+      # Passo 4: Instalar a versão mais recente do Cypress
+      - name: Install Cypress
+        run: yarn add cypress@latest  # Garantindo que a versão mais recente do Cypress será instalada
 
-    - name: Install Cypress
-      run: |
-        yarn add cypress
+      # Passo 5: Rodar testes Cypress em paralelo
+      - name: Run Cypress tests
+        run: |
+          npx cypress run --record --key ${{ secrets.CYPRESS_RECORD_KEY }} --parallel --ci-build-id $GITHUB_RUN_ID
 
-    - name: Run Cypress tests in parallel
-      run: |
-        npx cypress run --record --parallel --ci-build-id ${{ github.run_id }} --group 'group-${{ matrix.parallel }}'  # Executando testes em paralelo
+      # Passo 6: Notificação de falha para Slack
+      - name: Notify failure to Slack
+        if: failure()  # Somente será executado se o job falhar
+        uses: rtCamp/action-slack-notify@v2
+        with:
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          message: "Cypress tests have failed on the branch: ${{ github.ref }}. Check the details!"
+          
+  # Job para salvar artefatos (exemplo: relatórios de testes, logs, vídeos, etc.)
+  save-artifacts:
+    runs-on: ubuntu-latest
+    needs: cypress-run  # Esse job depende do job cypress-run
+    steps:
+      - name: Upload Cypress videos and screenshots
+        uses: actions/upload-artifact@v2
+        with:
+          name: cypress-artifacts
+          path: |
+            cypress/videos
+            cypress/screenshots
+            cypress/results
